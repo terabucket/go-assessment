@@ -1,0 +1,114 @@
+openapi: 3.0.0
+
+info:
+  title: "Certificates API"
+  description: "API for managing clients certificates"
+  version: "2.0.0"
+
+servers:
+  - url: https://certificates.example.com/api/v1
+
+paths:
+  /certificates:
+    get:
+      description: List of certificates
+      responses:
+        "200":
+          description: Certificate information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListCertificatesResponse"
+        default:
+          description: "An error occurred."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      description: Updates the certificate for a client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCertificateRequest"
+      responses:
+        "200":
+          description: Updated certificate information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCertificateResponse"
+        default:
+          description: "An error occurred."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - code
+        - message
+    ListCertificatesResponse:
+      type: object
+      properties:
+        certificates:
+          type: array
+          items:
+            $ref: "#/components/schemas/Certificate"
+      required:
+        - certificates
+    UpdateCertificateRequest:
+      type: object
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        certificate_id:
+          type: string
+          format: uuid
+      required:
+        - client_id
+        - certificate_id
+    UpdateCertificateResponse:
+      type: object
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        certificate:
+          $ref: "#/components/schemas/Certificate"
+      required:
+        - client_id
+        - certificate
+    Certificate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        certificate_pem_encoded:
+          type: string
+        not_before:
+          type: string
+          format: date
+        not_after:
+          type: string
+          format: date
+        serial_number:
+          type: string
+      required:
+        - id
+        - certificate_pem_encoded
+        - not_before
+        - not_after
+        - serial_number
